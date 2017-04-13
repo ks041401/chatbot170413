@@ -10,3 +10,4 @@ applications:
   - Conversation-HKMC
   - dashDB for Analytics-HKMC
   - availability-monitoring-auto
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
