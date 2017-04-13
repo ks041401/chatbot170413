@@ -4,7 +4,7 @@ applications:
   instances: 1
   domain: mybluemix.net
   name: HKMC Chatbot
-  host: hkmcchatbot
+  host: chatbotv020410
   disk_quota: 1024M
   services:
   - Conversation-HKMC
