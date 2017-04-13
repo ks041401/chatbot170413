@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="HKMCDash">
+
+	<select id="failureList" parameterClass="hmap" resultClass="Dataset">
+	SELECT 'Log'||LOG_SEQ AS LogSeq
+		   ,LOG_DATE AS LogDate
+		   ,'홍길동' AS UserCd
+		   ,'질문인식불가' AS ConvData
+		   ,WATSON_PASS_YN AS WatsonPassYn
+		   ,WATSON_RETRAIN_YN AS WatsonRetrainYn
+		   ,REG_DATE AS RegDate
+      FROM CHAT_LOG
+     WHERE TO_CHAR(REG_DATE,'YYYYMMDD') = TO_CHAR(SYSDATE,'YYYYMMDD')
+       AND USER_CD ='2'
+       AND WATSON_PASS_YN ='N'
+	 ORDER BY REG_DATE DESC
+	</select>
+
+	<select id="cntCall1R" parameterClass="hmap" resultClass="hmap">
+		SELECT NVL(COUNT(1),0) cnt
+		  FROM CHAT_LOG
+		 WHERE TO_CHAR(REG_DATE,'YYYYMMDD') = TO_CHAR(SYSDATE,'YYYYMMDD')
+           AND WATSON_PASS_YN ='Y'
+           AND USER_CD =2
+	</select>
+	
+	<select id="cntCall2R" parameterClass="hmap" resultClass="hmap">
+		SELECT NVL(COUNT(1),0) cnt
+		  FROM CHAT_LOG
+		 WHERE TO_CHAR(REG_DATE,'YYYYMMDD') = TO_CHAR(SYSDATE,'YYYYMMDD')
+		   AND WATSON_PASS_YN ='N'
+		   AND USER_CD =2
+	</select>
+
+	<select id="cntCall1T" parameterClass="hmap" resultClass="hmap">
+		SELECT NVL(COUNT(1),0) cnt
+		  FROM CHAT_LOG
+		 WHERE WATSON_PASS_YN ='Y'
+		   AND USER_CD =2
+	</select>
+	
+	<select id="cntCall2T" parameterClass="hmap" resultClass="hmap">
+		SELECT NVL(COUNT(1),0) cnt
+		  FROM CHAT_LOG
+		 WHERE WATSON_PASS_YN ='N'
+		   AND USER_CD =2
+	</select>
+
+	<select id="cntTime" parameterClass="hmap" resultClass="hmap">
+        select count(1) cnt
+        from CHAT_TIME_LOG
+        group by MITE
+	</select>
+
+    <select id="cntIntent" parameterClass="hmap" resultClass="Dataset">
+    select count(1) cnt, intent
+      from CHAT_LOG
+     where intent is not null
+       and intent != '' 
+     group by intent 
+     order by count(1) desc
+    </select>
+</sqlMap>

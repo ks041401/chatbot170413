@@ -1,0 +1,12 @@
+applications:
+- path: target/JavaHelloWorldApp.war
+  memory: 512M
+  instances: 1
+  domain: mybluemix.net
+  name: HKMC Chatbot
+  host: hkmcchatbot
+  disk_quota: 1024M
+  services:
+  - Conversation-HKMC
+  - dashDB for Analytics-HKMC
+  - availability-monitoring-auto

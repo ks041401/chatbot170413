@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+<sqlMap namespace="HKMC">
+
+	<select id="test" resultClass="hmap">
+		select "field1", "field2" from "test"
+	</select>
+	
+	<select id="testParm" resultClass="hmap">
+		select "field1", "field2"
+		from   "test"
+		where  "field1" = #field1#    
+	</select>
+
+	<select id="test2" resultClass="hmap">
+		select field1, field2 from test2
+	</select>
+	
+	<select id="test2Parm" parameterClass="hmap" resultClass="hmap">
+		select field1
+		     , field2 as CAR_INFO
+		from   test2
+		where  field1 = #field1#
+	</select>	
+
+	<insert id="insertTest" parameterClass="hmap">
+		INSERT INTO test VALUES (
+		  '1', '2'
+		)
+	</insert>
+
+	<insert id="insertChat" parameterClass="hmap">
+		INSERT INTO CHAT_LOG 
+		(
+			LOG_SEQ
+		   ,LOG_DATE
+		   ,USER_CD
+		   ,CONV_DATA
+		   ,WATSON_PASS_YN
+		   ,WATSON_RETRAIN_YN
+		   ,REG_DATE
+		   ,INTENT
+		)
+		VALUES (
+		    (SELECT NVL(MAX(LOG_SEQ)+1,1) FROM CHAT_LOG)
+		   ,TO_CHAR(SYSDATE,'YYYYMMDD')
+		   ,#USER_CD#
+		   ,#CONV_DATA#
+		   ,#WATSON_PASS_YN#
+		   ,#WATSON_RETRAIN_YN#
+		   ,SYSDATE
+		   ,#INTENT#
+		)
+	</insert>
+	
+	<insert id="insertChatTime" parameterClass="hmap">
+		INSERT INTO CHAT_TIME_LOG 
+		(
+			CHAT_SEQ
+		   ,ST_DATE
+		   ,ED_DATE
+		   ,MITE
+		)
+		VALUES (
+		    (SELECT NVL(MAX(CHAT_SEQ)+1,'1') FROM CHAT_TIME_LOG)
+		   ,SYSDATE
+		   ,SYSDATE
+		   ,1
+		)
+	</insert>
+
+	<update id="updateChatTime" parameterClass="hmap">
+		UPDATE CHAT_TIME_LOG 
+		SET ED_DATE = SYSDATE
+		   ,MITE    = ( CASE WHEN TIMESTAMPDIFF( 4, SYSDATE - ST_DATE ) = 0 THEN '1'
+		                     WHEN TIMESTAMPDIFF( 4, SYSDATE - ST_DATE ) BETWEEN 1 AND 2 THEN '3'
+		                     ELSE '5' END) 
+		WHERE CHAT_SEQ = (SELECT MAX(CHAT_SEQ) FROM CHAT_TIME_LOG)
+	</update>
+	
+	<select id="carOption" parameterClass="hmap" resultClass="hmap">
+		SELECT SUM(PRICE) CARPRICE
+		FROM
+		(
+			SELECT PRICE 
+			FROM CAR_INFO_K
+			WHERE CAR_NM=#carkind# 
+			UNION ALL
+			(
+			SELECT PKG_PRICE FROM CAR_PKG_INFO_K
+			WHERE CAR_PKG_NM =#caroption1#
+			FETCH FIRST 1 ROW ONLY
+			)
+			UNION ALL
+			(
+			SELECT PKG_PRICE FROM CAR_PKG_INFO_K
+			WHERE CAR_PKG_NM =#caroption2# 
+			FETCH FIRST 1 ROW ONLY
+			)
+			UNION ALL
+			(
+			SELECT PKG_PRICE FROM CAR_PKG_INFO_K
+			WHERE CAR_PKG_NM =#caroption3# 
+			FETCH FIRST 1 ROW ONLY
+			)
+		)
+	</select>	
+	
+</sqlMap>
